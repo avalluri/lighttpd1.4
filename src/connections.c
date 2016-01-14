@@ -936,7 +936,8 @@ static handler_t connection_handle_fdevent(server *srv, void *context, int reven
 	}
 
 
-	if (con->state == CON_STATE_READ) {
+	if (con->state == CON_STATE_READ ||
+            con->state == CON_STATE_READ_CONTINUOUS) {
 		connection_handle_read_state(srv, con);
 	}
 
@@ -1157,9 +1158,10 @@ int connection_state_machine(server *srv, connection *con) {
 
 			switch (r = http_response_prepare(srv, con)) {
 			case HANDLER_WAIT_FOR_EVENT:
-				if (!con->file_finished && (!con->file_started || 0 == con->conf.stream_response_body)) {
+				if (!con->file_finished && (!con->file_started || 0 == con->conf.stream_response_body || con->state == CON_STATE_READ_CONTINUOUS)) {
 					break; /* come back here */
 				}
+				
 				/* response headers received from backend; fall through to start response */
 			case HANDLER_FINISHED:
 				if (con->error_handler_saved_status > 0) {
@@ -1292,7 +1294,11 @@ int connection_state_machine(server *srv, connection *con) {
 			connection_handle_close_state(srv, con);
 			break;
 		case CON_STATE_READ:
+		case CON_STATE_READ_CONTINUOUS:
 			connection_handle_read_state(srv, con);
+			if (con->state == CON_STATE_READ_CONTINUOUS) {
+				plugins_call_read_continuous(srv, con);
+			}
 			break;
 		case CON_STATE_WRITE:
 			do {
@@ -1377,6 +1383,9 @@ int connection_state_machine(server *srv, connection *con) {
 		if (con->conf.stream_request_body & FDEVENT_STREAM_REQUEST_POLLIN) {
 			r |= FDEVENT_IN;
 		}
+		break;
+	case CON_STATE_READ_CONTINUOUS:
+		/* leave up to plugins */
 		break;
 	default:
 		break;

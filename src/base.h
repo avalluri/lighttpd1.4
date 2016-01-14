@@ -357,7 +357,8 @@ typedef enum {
 	CON_STATE_WRITE,
 	CON_STATE_RESPONSE_END,
 	CON_STATE_ERROR,
-	CON_STATE_CLOSE
+	CON_STATE_CLOSE,
+	CON_STATE_READ_CONTINUOUS
 } connection_state_t;
 
 typedef enum {

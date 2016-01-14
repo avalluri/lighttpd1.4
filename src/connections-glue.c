@@ -25,6 +25,7 @@ const char *connection_get_state(connection_state_t state) {
 	case CON_STATE_REQUEST_END: return "req-end";
 	case CON_STATE_RESPONSE_START: return "resp-start";
 	case CON_STATE_RESPONSE_END: return "resp-end";
+	case CON_STATE_READ_CONTINUOUS: return "read-continuous";
 	default: return "(unknown)";
 	}
 }
@@ -42,6 +43,7 @@ const char *connection_get_short_state(connection_state_t state) {
 	case CON_STATE_REQUEST_END: return "Q";
 	case CON_STATE_RESPONSE_START: return "s";
 	case CON_STATE_RESPONSE_END: return "S";
+	case CON_STATE_READ_CONTINUOUS: return "F";
 	default: return "x";
 	}
 }

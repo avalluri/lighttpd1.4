@@ -325,6 +325,14 @@ mod_uploadprogress_la_SOURCES = mod_uploadprogress.c
 mod_uploadprogress_la_LDFLAGS = $(common_module_ldflags)
 mod_uploadprogress_la_LIBADD = $(common_libadd)
 
+if WITH_WEBSOCKET
+lib_LTLIBRARIES += mod_websocket.la
+
+mod_websocket_la_SOURCES = mod_websocket_base64.h mod_websocket_base64.c mod_websocket_sha1.h mod_websocket_sha1.c mod_websocket_socket.h mod_websocket_socket.c mod_websocket_handshake.c mod_websocket_frame.c mod_websocket.h mod_websocket.c 
+mod_websocket_la_CFLAGS = $(AM_CFLAGS) $(WEBSOCKET_CFLAGS)
+mod_websocket_la_LDFLAGS = -module -export-dynamic -avoid-version -no-undefined
+mod_websocket_la_LIBADD = $(PCRE_LIB) $(common_libadd)
+endif
 
 hdr = server.h base64.h buffer.h network.h log.h keyvalue.h \
 	response.h request.h fastcgi.h chunk.h \
