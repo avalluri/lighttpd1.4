@@ -419,11 +419,12 @@ if test "$WITH_PCRE" != "no"; then
 			PCRE_LIB="-L$WITH_PCRE/lib -lpcre"
 			CPPFLAGS="$CPPFLAGS -I$WITH_PCRE/include"
 		else
-			AC_PATH_PROG(PCRECONFIG, pcre-config)
-			if test x"$PCRECONFIG" != x; then
-				PCRE_LIB=`$PCRECONFIG --libs`
-				CPPFLAGS="$CPPFLAGS `$PCRECONFIG --cflags`"
-			fi
+			PKG_CHECK_MODULES(PCREPKG, [libpcre], [
+				PCRE_LIB=${PCREPKG_LIBS}
+				CPPFLAGS="$CPPFLAGS ${PCREPKG_CFLAGS}"
+			], [
+				AC_MSG_ERROR([pcre pkgconfig not found, install the pcre-devel package or build with --without-pcre])
+			])
 		fi
 
   if test x"$PCRE_LIB" != x; then
